@@ -1,17 +1,45 @@
-name: FTP Deployment
+name: Laravel Deployment
 
 on:
   push:
     branches:
-      - main  # Déclenché lors d'un push sur la branche main
+      - main  # Ou votre branche de déploiement
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, intl, pdo_mysql
+    
+    - name: Install Composer Dependencies
+      run: composer install --no-dev --no-interaction --prefer-dist
+    
+    - name: Install NPM Dependencies
+      run: npm install
+    
+    - name: Compile Frontend Assets
+      run: npm run build
+    
+    - name: Prepare Deployment
+      run: |
+        # Créer un répertoire de déploiement
+        mkdir -p deploy
+        
+        # Copier fichiers essentiels
+        cp -R app bootstrap config database public resources routes storage vendor .env.example deploy/
+        cp public/index.php deploy/
+        
+        # Nettoyer les fichiers inutiles
+        rm -rf deploy/storage/logs/*
+        rm -rf deploy/storage/framework/sessions/*
+        rm -rf deploy/storage/framework/views/*
     
     - name: Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -19,7 +47,7 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: /htdocs/ # Répertoire de destination sur votre serveur
-        local-dir: ./  # Répertoire local à déployer
-        protocol: ftp  # Peut être ftp, ftps, ou sftp
-        port: 21  # Port FTP standard
+        server-dir: /htdocs/  # Répertoire de destination
+        local-dir: ./
+        protocol: ftp
+        port: 21
