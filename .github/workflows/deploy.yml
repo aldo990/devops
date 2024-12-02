@@ -19,7 +19,7 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: /home/vol7_3/infinityfree.com/if0_37837603/  # Répertoire de destination sur votre serveur
+        server-dir: /htdocs/ # Répertoire de destination sur votre serveur
         local-dir: ./  # Répertoire local à déployer
         protocol: ftp  # Peut être ftp, ftps, ou sftp
         port: 21  # Port FTP standard
