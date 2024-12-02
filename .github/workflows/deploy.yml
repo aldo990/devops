@@ -1,0 +1,25 @@
+name: FTP Deployment
+
+on:
+  push:
+    branches:
+      - main  # Déclenché lors d'un push sur la branche main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Deploy via FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: /home/vol7_3/infinityfree.com/if0_37837603  # Répertoire de destination sur votre serveur
+        local-dir: ./  # Répertoire local à déployer
+        protocol: ftp  # Peut être ftp, ftps, ou sftp
+        port: 21  # Port FTP standard
